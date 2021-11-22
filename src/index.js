@@ -14,10 +14,6 @@ dotenv.config();
 
   await driver.get(process.env.LANDING_URL);
 
-  return;
-
-  // await dealWithCookiePolicy(driver);
-
   await dealWithLogin(driver);
 
   const pagesUrls = process.env.PAGE_URLS.split(/, |,/);
@@ -29,13 +25,14 @@ dotenv.config();
   }
 
   for (let i = 0; i < pagesUrls.length && !savedKeys; i += 1) {
+  // for (let i = 0; i < 1 && !savedKeys; i += 1) {
     const pageUrl = pagesUrls[i];
 
     await driver.get(pageUrl);
 
     const sectionTitleElement = await checkForElement(driver, pageSectionTitlePath);
     const sectionTitleAttribute = await sectionTitleElement.getAttribute('innerText');
-    const sectionTitle = sectionTitleAttribute.replace('Free', '').replace('Music Loops & Samples', '').trim().replace(/ /g, '-');
+    const sectionTitle = sectionTitleAttribute.trim().replace(/ /g, '-');
 
     const items = await getItemsOnPage(driver);
 
@@ -56,19 +53,19 @@ dotenv.config();
     if (goodies.length) {
       donwloadLimitReachedStatus = await downloadItems(driver, goodies);
 
-      if (donwloadLimitReachedStatus.donwloadLimitReached) {
-        allItems[sectionTitle].goodies = goodies.slice(donwloadLimitReachedStatus.currentIndex);
-        saveState(allItems);
-      }
+      // if (donwloadLimitReachedStatus.donwloadLimitReached) {
+      //   allItems[sectionTitle].goodies = goodies.slice(donwloadLimitReachedStatus.currentIndex);
+      //   saveState(allItems);
+      // }
     }
 
     if (maybes.length && !donwloadLimitReachedStatus.donwloadLimitReached) {
       donwloadLimitReachedStatus = await downloadItems(driver, maybes);
 
-      if (donwloadLimitReachedStatus.donwloadLimitReached) {
-        allItems[sectionTitle].maybes = maybes.slice(donwloadLimitReachedStatus.currentIndex);
-        saveState(allItems);
-      }
+      // if (donwloadLimitReachedStatus.donwloadLimitReached) {
+      //   allItems[sectionTitle].maybes = maybes.slice(donwloadLimitReachedStatus.currentIndex);
+      //   saveState(allItems);
+      // }
     }
 
     await waitFor(10000);
@@ -76,10 +73,10 @@ dotenv.config();
     await moveFilesToDir(maybes, process.env.MAYBES_PATH, sectionTitle);
     await moveFilesToDir(goodies, process.env.GOODIES_PATH, sectionTitle);
 
-    if (donwloadLimitReachedStatus.donwloadLimitReached) {
-      driver.close();
-      return;
-    }
+    // if (donwloadLimitReachedStatus.donwloadLimitReached) {
+    //   driver.close();
+    //   return;
+    // }
   }
   saveState({});
   driver.close();

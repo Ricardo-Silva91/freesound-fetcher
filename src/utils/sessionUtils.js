@@ -26,16 +26,14 @@ const sessionUtils = {
     if (!myProfileButton) {
       const loginButton = await checkForElement(driver, loginButtonPath);
 
-      loginButton.click();
+      await loginButton.click();
 
       const usernameInput = await checkForElement(driver, usernameInputPath);
       const passwordInput = await checkForElement(driver, passwordInputPath);
-      const disclaimerInput = await checkForElement(driver, disclaimerInputPath);
 
       if (usernameInput) {
         usernameInput.sendKeys(process.env.LOOPERMAN_EMAIL);
         passwordInput.sendKeys(process.env.LOOPERMAN_PASSWORD);
-        await disclaimerInput.click();
 
         const loginSubmitButton = await checkForElement(driver, loginSubmitButtonPath);
 

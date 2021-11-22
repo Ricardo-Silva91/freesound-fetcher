@@ -5,17 +5,21 @@ const {
   itemTagsPath,
   itemDescPath,
   itemPlayerTitlePath,
-  itemTagsAnchorPath,
-  itemDescParagraphPath,
-  itemPlayerDownloadButtonPath,
   itemPlayerAuthorPath,
-  pageLinksPath,
-  pageLinksNextAnchorPath,
+  lastPageLinkPath,
+  previousPageLinkPath,
+  removeWarningLinkPath,
+  itemDownloadPath,
 } = require('./elementPaths');
-const { wasDownloadLimitReached } = require('./sessionUtils');
 
 const itemIsBlackListed = (itemText) => {
-  const blackListedTerms = process.env.BLACKLISTED_TERMS.split(/, |,/);
+  const blackListString = process.env.BLACKLISTED_TERMS;
+
+  if (!blackListString) {
+    return true;
+  }
+
+  const blackListedTerms = blackListString.split(/, |,/);
 
   for (let j = 0; j < blackListedTerms.length; j += 1) {
     const term = blackListedTerms[j];
@@ -29,7 +33,13 @@ const itemIsBlackListed = (itemText) => {
 };
 
 const itemIsWhiteListed = (itemText) => {
-  const whitelistedTerms = process.env.WHITELISTED_TERMS.split(/, |,/);
+  const whiteListString = process.env.WHITELISTED_TERMS;
+
+  if (!whiteListString) {
+    return false;
+  }
+
+  const whitelistedTerms = whiteListString.split(/, |,/);
 
   for (let j = 0; j < whitelistedTerms.length; j += 1) {
     const term = whitelistedTerms[j];
@@ -43,19 +53,21 @@ const itemIsWhiteListed = (itemText) => {
 };
 
 const printState = (index, length) => {
-  const percentage = index / length;
+  const resolvedLength = length % 2 === 0 ? length : (length + 1);
+
+  const percentage = Math.floor((index / resolvedLength) * 100);
 
   switch (percentage) {
     case 0:
-      console.log(`starting download of ${length} items`);
+      console.log(`starting download of ${resolvedLength} items`);
       break;
-    case 0.25:
+    case 25:
       console.log(`${percentage * 100}% done`);
       break;
-    case 0.5:
+    case 50:
       console.log(`${percentage * 100}% done`);
       break;
-    case 0.75:
+    case 75:
       console.log(`${percentage * 100}% done`);
       break;
 
@@ -67,12 +79,14 @@ const printState = (index, length) => {
 const itemÛtils = {
   getItemsOnPage: async (driver) => {
     const finalList = [];
-    let isLastPage = false;
 
-    do {
+    // should go to last page, then travel 2 pages
+    const lastPageLinkElement = await checkForElement(driver, lastPageLinkPath);
+    await lastPageLinkElement.click();
+    waitFor(1000);
+
+    for (let j = 0; j < 2; j += 1) {
       const playerItems = await getAllElements(driver, itemPlayerPath);
-      const tagItems = await getAllElements(driver, itemTagsPath);
-      const descItems = await getAllElements(driver, itemDescPath);
 
       for (let i = 0; i < playerItems.length; i += 1) {
         const item = playerItems[i];
@@ -83,23 +97,18 @@ const itemÛtils = {
         const title = await titleElement.getAttribute('innerText');
         const authorElement = await checkForElement(item, itemPlayerAuthorPath);
         const author = await authorElement.getAttribute('innerText');
-        const downloadButtonElement = await checkForElement(item, itemPlayerDownloadButtonPath);
-        const url = await downloadButtonElement.getAttribute('href');
-        const id = url.split('/').pop();
+        const url = await titleElement.getAttribute('href');
+        const id = url.split('/')[url.split('/').length - 2];
 
-        if (tagItems[i]) {
-          const tagAnchors = await getAllElements(tagItems[i], itemTagsAnchorPath);
+        const tagsElements = await getAllElements(item, itemTagsPath);
 
-          for (let j = 0; j < tagAnchors.length; j += 1) {
-            const anchor = await tagAnchors[j].getAttribute('innerText');
-            tags.push(anchor);
-          }
+        for (let k = 0; k < tagsElements.length; k += 1) {
+          const anchor = await tagsElements[j].getAttribute('innerText');
+          tags.push(anchor);
         }
 
-        if (descItems[i]) {
-          const descParagraphElement = await checkForElement(descItems[i], itemDescParagraphPath);
-          desc = await descParagraphElement.getAttribute('innerText');
-        }
+        const descriptionElement = await checkForElement(item, itemDescPath);
+        desc = await descriptionElement.getAttribute('innerText');
 
         finalList.push({
           id,
@@ -111,16 +120,10 @@ const itemÛtils = {
         });
       }
 
-      const pageLinksElement = await checkForElement(driver, pageLinksPath);
-      const pageLinksNextAnchorElement = pageLinksElement
-        && await checkForElement(pageLinksElement, pageLinksNextAnchorPath);
-
-      if (pageLinksNextAnchorElement) {
-        await pageLinksNextAnchorElement.click();
-      } else {
-        isLastPage = true;
-      }
-    } while (!isLastPage);
+      const previousPageLinksElement = await checkForElement(driver, previousPageLinkPath);
+      await previousPageLinksElement.click();
+      waitFor(1000);
+    }
 
     return finalList;
   },
@@ -155,23 +158,32 @@ const itemÛtils = {
       printState(i, items.length);
       await driver.switchTo().newWindow('tab');
       await driver.get(item.url);
+      await waitFor(1000);
 
-      const downloadButtonElement = await checkForElement(driver, itemPlayerDownloadButtonPath);
+      // remove warning if needed
+      const removeWarningLinkElement = await checkForElement(driver, removeWarningLinkPath);
+
+      if (removeWarningLinkElement) {
+        await removeWarningLinkElement.click();
+        await waitFor(1000);
+      }
+
+      const downloadButtonElement = await checkForElement(driver, itemDownloadPath);
 
       await downloadButtonElement.click();
-      await waitFor(7000);
+      await waitFor(3000);
 
-      const donwloadLimitReached = await wasDownloadLimitReached(driver);
+      // const donwloadLimitReached = await wasDownloadLimitReached(driver);
 
-      if (donwloadLimitReached) {
-        console.warn('Donwload limit was reached');
-        await driver.close();
-        await driver.switchTo().window(originalWindow);
-        return ({
-          donwloadLimitReached: true,
-          currentIndex: i,
-        });
-      }
+      // if (donwloadLimitReached) {
+      //   console.warn('Donwload limit was reached');
+      //   await driver.close();
+      //   await driver.switchTo().window(originalWindow);
+      //   return ({
+      //     donwloadLimitReached: true,
+      //     currentIndex: i,
+      //   });
+      // }
 
       await driver.close();
       await driver.switchTo().window(originalWindow);
