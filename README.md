@@ -3,14 +3,14 @@ selenium script for searching and downloading files from https://freesound.org/
 
 ## Contents
 
- - [getting started](#gettingstarted)
-
+ - [Getting Started](#getting-started)
 
 
  ## Getting Started
 
  In order for the script to work, you need to have [selenium-webdriver](https://www.selenium.dev/documentation/getting_started/) set up on your system.
- You will also need to create the `.env` file for your project.
+ 
+ Next, you will need to create the `.env` file for your project.\
  start by copying the `.env.sample` file:
 
 ```
@@ -18,6 +18,23 @@ cp .env.sample .env
 ```
 
  Then, on the new `.env` file, fill the following fields:
+ 
+ | name | description | default |
+ |------|-------------|---------|
+ | CHROME_PATH | full path to the chrome (or brave) executable to use. | - |
+ | PROFILE_PATH | full path to the profile directory (can be empty, the profile will create itself if it doesn't exist).  | - |
+ | PROFILE_NAME | profile name. | default |
+ 
+ Now, you can run the script:
+
+```
+npm run start
+```
+ 
+ This time, the browser will open but nothing will happen 😥.\
+That's because you need to setup the download directory, so go to the browser setting and setup the path for the downloads and make sure 'Ask where to save each file before downloading' is off.\
+Close the browser and now you can fill the rest of the `.env` variables, just make sure `TRIAGE_PATH` matches the path you set in the browser setting 😉.
+ 
 
  | name | description | default |
  |------|-------------|---------|
