@@ -7,12 +7,40 @@ const {
   loginButtonPath,
   usernameInputPath,
   passwordInputPath,
-  disclaimerInputPath,
   loginSubmitButtonPath,
   bodyPath,
 } = require('./elementPaths');
 
 const sessionUtils = {
+  checkEnvironment: () => {
+    const {
+      CHROME_PATH,
+      PROFILE_PATH,
+      PROFILE_NAME,
+      LANDING_URL,
+      GOODIES_PATH,
+      MAYBES_PATH,
+      TRIAGE_PATH,
+      PAGE_URLS,
+      FREESOUND_EMAIL,
+      FREESOUND_PASSWORD,
+    } = process.env;
+
+    if (!CHROME_PATH
+      || !PROFILE_PATH
+      || !PROFILE_NAME
+      || !LANDING_URL
+      || !GOODIES_PATH
+      || !MAYBES_PATH
+      || !TRIAGE_PATH
+      || !PAGE_URLS
+      || !FREESOUND_EMAIL
+      || !FREESOUND_PASSWORD) {
+      return false;
+    }
+
+    return true;
+  },
   dealWithCookiePolicy: async (driver) => {
     const agreeButton = await checkForElement(driver, agreeButtonPath);
 
