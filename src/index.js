@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const { waitFor, getDriver, checkForElement } = require('./utils/driverUtils');
 const { getItemsOnPage, filterItems, downloadItems } = require('./utils/itemUtils');
 const { moveFilesToDir, saveState } = require('./utils/fsUtils');
-const { dealWithCookiePolicy, dealWithLogin } = require('./utils/sessionUtils');
+const { dealWithLogin } = require('./utils/sessionUtils');
 const { pageSectionTitlePath } = require('./utils/elementPaths');
 const { allSavedItems } = require('../state');
 
@@ -13,6 +13,10 @@ dotenv.config();
   const driver = await getDriver();
 
   await driver.get(process.env.LANDING_URL);
+
+  if (!process.env.TRIAGE_PATH) {
+    console.warn('please set the download directry and fill environment variable TRIAGE_PATH');
+  }
 
   await dealWithLogin(driver);
 
@@ -25,7 +29,6 @@ dotenv.config();
   }
 
   for (let i = 0; i < pagesUrls.length && !savedKeys; i += 1) {
-  // for (let i = 0; i < 1 && !savedKeys; i += 1) {
     const pageUrl = pagesUrls[i];
 
     await driver.get(pageUrl);
@@ -52,31 +55,16 @@ dotenv.config();
 
     if (goodies.length) {
       donwloadLimitReachedStatus = await downloadItems(driver, goodies);
-
-      // if (donwloadLimitReachedStatus.donwloadLimitReached) {
-      //   allItems[sectionTitle].goodies = goodies.slice(donwloadLimitReachedStatus.currentIndex);
-      //   saveState(allItems);
-      // }
     }
 
     if (maybes.length && !donwloadLimitReachedStatus.donwloadLimitReached) {
       donwloadLimitReachedStatus = await downloadItems(driver, maybes);
-
-      // if (donwloadLimitReachedStatus.donwloadLimitReached) {
-      //   allItems[sectionTitle].maybes = maybes.slice(donwloadLimitReachedStatus.currentIndex);
-      //   saveState(allItems);
-      // }
     }
 
     await waitFor(10000);
 
     await moveFilesToDir(maybes, process.env.MAYBES_PATH, sectionTitle);
     await moveFilesToDir(goodies, process.env.GOODIES_PATH, sectionTitle);
-
-    // if (donwloadLimitReachedStatus.donwloadLimitReached) {
-    //   driver.close();
-    //   return;
-    // }
   }
   saveState({});
   driver.close();
