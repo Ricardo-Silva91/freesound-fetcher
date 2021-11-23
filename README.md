@@ -21,16 +21,16 @@ cp .env.sample .env
 
  | name | description | default |
  |------|-------------|---------|
- | CHROME_PATH | desc | - |
- | PROFILE_PATH | desc | - |
- | PROFILE_NAME | desc | default |
- | LANDING_URL | desc | https://freesound.org/ |
- | GOODIES_PATH | desc | - |
- | MAYBES_PATH | desc | - |
- | TRIAGE_PATH | desc | - |
- | PAGE_URLS | desc | https://freesound.org/browse/tags/sfx/ |
- | LOOPERMAN_EMAIL | desc | - |
- | LOOPERMAN_PASSWORD | desc | - |
- | WHITELISTED_TERMS | desc | - |
- | BLACKLISTED_TERMS | desc | Drums |
+ | CHROME_PATH | full path to the chrome (or brave) executable to use. | - |
+ | PROFILE_PATH | full path to the profile directory (can be empty, the profile will create itself if it doesn't exist).  | - |
+ | PROFILE_NAME | profile name. | default |
+ | LANDING_URL | landing url for the script. | https://freesound.org/ |
+ | GOODIES_PATH | path to the directory where whitelisted items will be stored. | - |
+ | MAYBES_PATH | path to the directory where not blacklisted items will be stored. | - |
+ | TRIAGE_PATH | path to the directory where downloads will be stored. (same as the one set in the browser) | - |
+ | PAGE_URLS | pages to download from (separated by ',') | https://freesound.org/browse/tags/sfx/ |
+ | LOOPERMAN_EMAIL | user email to login. | - |
+ | LOOPERMAN_PASSWORD | user password to login. | - |
+ | WHITELISTED_TERMS | words/phrases used to whitelist an item (these have less priority than blacklist terms). | - |
+ | BLACKLISTED_TERMS | words/phrases used to blacklist an item (if they are found in the item's title, description, author or tags, the item will not be downloaded). | Drums |
  
