@@ -32,8 +32,8 @@ const sessionUtils = {
       const passwordInput = await checkForElement(driver, passwordInputPath);
 
       if (usernameInput) {
-        usernameInput.sendKeys(process.env.LOOPERMAN_EMAIL);
-        passwordInput.sendKeys(process.env.LOOPERMAN_PASSWORD);
+        usernameInput.sendKeys(process.env.FREESOUND_EMAIL);
+        passwordInput.sendKeys(process.env.FREESOUND_PASSWORD);
 
         const loginSubmitButton = await checkForElement(driver, loginSubmitButtonPath);
 
