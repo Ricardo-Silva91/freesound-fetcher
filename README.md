@@ -3,11 +3,11 @@ selenium script for searching and downloading files from https://freesound.org/
 
 ## Contents
 
- - [requirements](#requirements)
+ - [getting started](#gettingstarted)
 
 
 
- ## Requirements
+ ## Getting Started
 
  In order for the script to work, you need to have [selenium-webdriver](https://www.selenium.dev/documentation/getting_started/) set up on your system.
  You will also need to create the `.env` file for your project.
