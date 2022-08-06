@@ -69,10 +69,17 @@ dotenv.config();
     }
 
     await waitFor(10000);
+  }
+
+  for (let i = 0; i < keys.length; i += 1) {
+    const sectionTitle = keys[i];
+    const { goodies, maybes } = allItems[sectionTitle];
 
     await moveFilesToDir(maybes, process.env.MAYBES_PATH, sectionTitle);
     await moveFilesToDir(goodies, process.env.GOODIES_PATH, sectionTitle);
+    await waitFor(1000);
   }
+
   saveState({});
   driver.close();
 }());

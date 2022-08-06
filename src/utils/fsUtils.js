@@ -26,7 +26,7 @@ const fsUtils = {
 
       const matchedFile = fileList.find((file) => file.includes(id));
 
-      if (matchedFile) {
+      if (matchedFile && !matchedFile.includes('(1)')) {
         createDirIfNecessary(`${targetDir}/${sectionTitle}`);
         await moveFile(`${triageDir}/${matchedFile}`, `${targetDir}/${sectionTitle}/${matchedFile}`);
         movedFiles.push(id);
