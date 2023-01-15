@@ -1,7 +1,12 @@
 # freesound-fetcher
-selenium script for searching and downloading files from https://freesound.org/
+playwright script for searching and downloading files from https://freesound.org/
 
-## Contents
+## WIP
+
+With the move to playwright, the usage guide has not been updated yet.\
+It will be soon. 😉
+
+<!-- ## Contents
 
  - [Getting Started](#getting-started)
 
@@ -50,4 +55,4 @@ Close the browser and now you can fill the rest of the `.env` variables, just ma
  | GOODIES_PATH | path to the directory where whitelisted items will be stored. | - |
  | MAYBES_PATH | path to the directory where not blacklisted items will be stored. | - |
  | TRIAGE_PATH | path to the directory where downloads will be stored. (same as the one set in the browser) | - |
- 
+  -->
