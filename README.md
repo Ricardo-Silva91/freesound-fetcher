@@ -1,10 +1,7 @@
 # freesound-fetcher
 playwright script for searching and downloading files from https://freesound.org/
 
-## WIP
-
-With the move to playwright, the usage guide has not been updated yet.\
-It will be soon. 😉
+⚠️ with the recent changes to the freesound web app, this script is not working and will be updated in the future ⚠️
 
 <!-- ## Contents
 
